@@ -5,32 +5,35 @@ import hh.model.dto.request.EmployeeRequest;
 import hh.model.dto.response.EmployeeResponse;
 import hh.model.entity.Employee;
 import hh.exception.CustomsException;
-import hh.model.entity.RoleName;
+
 import hh.service.IGenericService;
 import hh.service.mapper.EmployeeMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import lombok.AllArgsConstructor;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
+@AllArgsConstructor
 public class IEmployeeServiceIml implements IGenericService<EmployeeResponse, EmployeeRequest, Long> {
 
-    @Autowired
-    private IEmployeeRepo iEmployeeRepo;
+    private final IEmployeeRepo iEmployeeRepo;
 
-    @Autowired
-    private EmployeeMapper employeeMapper;
+    private final EmployeeMapper employeeMapper;
 
+    public Page<EmployeeResponse> findAll(int page, int size) {
+        Page<Employee> employeeResponses = iEmployeeRepo.findAll(PageRequest.of(page, size));
+        return employeeResponses.map(employeeMapper::toResponse);
+    }
 
     @Override
     public Page<EmployeeResponse> getAll(Pageable pageable, String employeeName) {
@@ -45,14 +48,14 @@ public class IEmployeeServiceIml implements IGenericService<EmployeeResponse, Em
 
     @Override
     public List<EmployeeResponse> getAll() {
-        return iEmployeeRepo.findAll( ).stream()
-                .map(e -> employeeMapper.toResponse(e)).collect(Collectors.toList());
+        return iEmployeeRepo.findAll().stream()
+                .map(employeeMapper::toResponse).collect(Collectors.toList());
     }
 
     @Override
-    public EmployeeResponse save(EmployeeRequest employeeRequest) throws CustomsException {
+    public void save(EmployeeRequest employeeRequest) throws CustomsException {
         employeeRequest.setRole(Collections.singleton(2L));
-        return employeeMapper.toResponse(iEmployeeRepo.save(employeeMapper.toEntity(employeeRequest)));
+        employeeMapper.toResponse(iEmployeeRepo.save(employeeMapper.toEntity(employeeRequest)));
     }
 
     @Override

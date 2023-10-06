@@ -10,7 +10,8 @@ import hh.model.entity.Role;
 import hh.service.IGenericService;
 
 import hh.service.mapper.RolesMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
@@ -21,11 +22,14 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
+@AllArgsConstructor
 public class RoleService implements IGenericService<RoleResponse, RoleRequest, Long> {
-    @Autowired
-    private IRoleRepo roleRepo;
-    @Autowired
-    private RolesMapper rolesMapper;
+
+    private final IRoleRepo roleRepo;
+
+    private final RolesMapper rolesMapper;
+
+
 
     @Override
     public Page<RoleResponse> getAll(Pageable pageable, String search) {
@@ -41,13 +45,13 @@ public class RoleService implements IGenericService<RoleResponse, RoleRequest, L
     @Override
     public List<RoleResponse> getAll() {
         return roleRepo.findAll().stream()
-                .map(e -> rolesMapper.toResponse(e)).collect(Collectors.toList());
+                .map(rolesMapper::toResponse).collect(Collectors.toList());
     }
 
 
     @Override
-    public RoleResponse save(RoleRequest roleRequest) throws CustomsException {
-        return rolesMapper.toResponse(roleRepo.save(rolesMapper.toEntity(roleRequest)));
+    public void save(RoleRequest roleRequest)  {
+        rolesMapper.toResponse(roleRepo.save(rolesMapper.toEntity(roleRequest)));
 
     }
 

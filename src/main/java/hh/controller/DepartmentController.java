@@ -2,21 +2,21 @@ package hh.controller;
 
 import hh.exception.CustomsException;
 import hh.model.dto.request.DepartmentRequest;
-import hh.model.dto.request.EmployeeRequest;
 import hh.model.entity.Department;
-import hh.model.entity.Employee;
 import hh.service.iml.DepartmentService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
+@AllArgsConstructor
 @RequestMapping("/department")
 public class DepartmentController {
-    @Autowired
-    private DepartmentService departmentService;
+
+    private final DepartmentService departmentService;
     @GetMapping("/get-all")
     public String getHome(Model model) {
         model.addAttribute("department", departmentService.getAll());
@@ -24,12 +24,12 @@ public class DepartmentController {
     }
 
     @GetMapping("/add-department")
-    public ModelAndView addEmployee(Model model) {
+    public ModelAndView addEmployee() {
         return new ModelAndView("/department/AddDepartment", "department", new Department());
     }
 
     @PostMapping("/add-department")
-    public String saveEmployee(@ModelAttribute("department") DepartmentRequest departmentRequest) throws CustomsException {
+    public String saveEmployee(@ModelAttribute("department") DepartmentRequest departmentRequest)  {
         departmentService.save(departmentRequest);
         return "redirect:/department/get-all";
     }

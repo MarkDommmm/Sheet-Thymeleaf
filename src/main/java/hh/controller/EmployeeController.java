@@ -6,7 +6,8 @@ import hh.model.dto.response.EmployeeResponse;
 import hh.exception.CustomsException;
 
 import hh.service.iml.IEmployeeServiceIml;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -18,10 +19,11 @@ import java.util.List;
 
 
 @RestController
+@AllArgsConstructor
 @RequestMapping("/api/employee")
 public class EmployeeController {
-    @Autowired
-    private IEmployeeServiceIml employeeServiceIml;
+
+    private final IEmployeeServiceIml employeeServiceIml;
 
     @GetMapping("/search")
     public ResponseEntity<Page<EmployeeResponse>> searchEmployee(

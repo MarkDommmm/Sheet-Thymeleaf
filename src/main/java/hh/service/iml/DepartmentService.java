@@ -7,9 +7,10 @@ import hh.model.dto.response.DepartmentResponse;
 import hh.model.entity.Department;
 import hh.service.IGenericService;
 import hh.service.mapper.DepartmentMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
+
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -19,11 +20,12 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
+@AllArgsConstructor
 public class DepartmentService implements IGenericService<DepartmentResponse, DepartmentRequest, Long> {
-    @Autowired
-    private IDepartmentRepo departmentRepo;
-    @Autowired
-    private DepartmentMapper departmentMapper;
+
+    private final IDepartmentRepo departmentRepo;
+
+    private final DepartmentMapper departmentMapper;
 
     @Override
     public Page<DepartmentResponse> getAll(Pageable pageable, String search) {
@@ -39,12 +41,12 @@ public class DepartmentService implements IGenericService<DepartmentResponse, De
     @Override
     public List<DepartmentResponse> getAll() {
         return departmentRepo.findAll().stream()
-                .map(e -> departmentMapper.toResponse(e)).collect(Collectors.toList());
+                .map(departmentMapper::toResponse).collect(Collectors.toList());
     }
 
     @Override
-    public DepartmentResponse save(DepartmentRequest departmentRequest) throws CustomsException {
-        return departmentMapper.toResponse(departmentRepo.save(departmentMapper.toEntity(departmentRequest)));
+    public void save(DepartmentRequest departmentRequest)  {
+        departmentMapper.toResponse(departmentRepo.save(departmentMapper.toEntity(departmentRequest)));
 
     }
 

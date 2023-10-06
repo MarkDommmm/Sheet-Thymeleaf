@@ -7,7 +7,8 @@ import hh.model.entity.Employee;
 import hh.service.iml.DepartmentService;
 import hh.service.iml.IEmployeeServiceIml;
 import hh.service.iml.RoleService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -19,28 +20,29 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
+
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+
 
 @Controller
+@AllArgsConstructor
 @RequestMapping("/employee")
 public class HomeController {
 
-    @Autowired
-    private IEmployeeServiceIml employeeServiceIml;
-    @Autowired
-    private DepartmentService departmentService;
-    @Autowired
-    private RoleService roleService;
+
+    private final IEmployeeServiceIml employeeServiceIml;
+
+    private final DepartmentService departmentService;
+
+    private final RoleService roleService;
     @GetMapping
     public String getName() {
         return "/pages/ChoseTable";
     }
     @GetMapping("/search")
     public String searchEmployee(
-            @PageableDefault(page = 0, size = 10) Pageable pageable,
+            @PageableDefault(page = 0, size = 9) Pageable pageable,
             Model model,
             @RequestParam(value = "search", defaultValue = "") String search) {
         Page<EmployeeResponse> employeePage = employeeServiceIml.getAll(pageable, search);
@@ -49,28 +51,14 @@ public class HomeController {
     }
 
     @GetMapping("/get-all")
-    public String getHome(Model model, @RequestParam(name = "page", defaultValue = "1") int page) {
-
-        int pageSize = 5; // Số bản ghi hiển thị trên mỗi trang
-        List<EmployeeResponse> employeeList = employeeServiceIml.getAll();
-
-        int totalRecords = employeeList.size();
-        int totalPages = (int) Math.ceil((double) totalRecords / pageSize);
-
-        List<EmployeeResponse> paginatedEmployeeList = new ArrayList<>();
-        int startIndex = (page - 1) * pageSize;
-        int endIndex = Math.min(startIndex + pageSize, totalRecords);
-
-        for (int i = startIndex; i < endIndex; i++) {
-            paginatedEmployeeList.add(employeeList.get(i));
-        }
-
-        List<Integer> pages = IntStream.rangeClosed(1, totalPages).boxed().collect(Collectors.toList());
-        model.addAttribute("employee", paginatedEmployeeList);
-        model.addAttribute("pages", pages);
+    public String getHome(Model model, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "5") int size) {
+        Page<EmployeeResponse> employeePage = employeeServiceIml.findAll(page, size);
+        model.addAttribute("employeePage", employeePage);
         model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", employeePage.getTotalPages());
         return "/employee/ListEmployee";
     }
+
 
     @GetMapping("/add-employee")
     public ModelAndView addEmployee(Model model) {

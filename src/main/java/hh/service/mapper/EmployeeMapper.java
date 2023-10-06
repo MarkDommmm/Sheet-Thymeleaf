@@ -9,18 +9,20 @@ import hh.model.entity.Department;
 import hh.model.entity.Employee;
 import hh.model.entity.Role;
 import hh.service.IGenericMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
+
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 import java.util.Set;
 
 @Component
+@AllArgsConstructor
 public class EmployeeMapper implements IGenericMapper<Employee, EmployeeRequest, EmployeeResponse> {
-    @Autowired
-    private IDepartmentRepo department;
-    @Autowired
-    private IRoleRepo roleRepo;
+
+    private final IDepartmentRepo department;
+
+    private final IRoleRepo roleRepo;
 
     @Override
     public Employee toEntity(EmployeeRequest employeeRequest) throws CustomsException {

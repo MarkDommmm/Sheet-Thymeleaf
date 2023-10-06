@@ -12,7 +12,7 @@ public interface IGenericService<T,K, E> {
     Page<T> getAll(Pageable pageable, String search);
     List<T> getAll();
 
-    T save(K k) throws CustomsException;
+    void save(K k) throws CustomsException;
 
     T update(K k, E e) throws CustomsException;
 
